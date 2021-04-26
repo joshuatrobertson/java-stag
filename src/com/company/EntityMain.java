@@ -17,4 +17,8 @@ abstract class EntityMain {
         this.description = description;
     }
 
+    public String getDescription() {
+        return this.description;
+    }
+
 }

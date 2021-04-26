@@ -5,10 +5,10 @@ import java.util.List;
 
 public class Action {
 
-    private List<String> triggers = new ArrayList<>();
-    private List<String> subjects = new ArrayList<>();
-    private List<String> consumed = new ArrayList<>();
-    private List<String> produced = new ArrayList<>();
+    private final List<String> triggers = new ArrayList<>();
+    private final List<String> subjects = new ArrayList<>();
+    private final List<String> consumed = new ArrayList<>();
+    private final List<String> produced = new ArrayList<>();
     private String narration;
 
     public void addTrigger(String trigger) {
@@ -17,6 +17,22 @@ public class Action {
 
     public void addSubject(String subject) {
         subjects.add(subject);
+    }
+
+    public List<String> getSubjects() {
+        return subjects;
+    }
+
+    public List<String> getConsumed() {
+        return consumed;
+    }
+
+    public String getNarration() {
+        return this.narration;
+    }
+
+    public List<String> getProduced() {
+        return produced;
     }
 
     public void addConsumed(String consumed) {
@@ -31,6 +47,8 @@ public class Action {
         this.narration = narration;
     }
 
-
+    public boolean checkTriggerExists(String trigger) {
+        return triggers.contains(trigger);
+    }
 
 }

@@ -10,35 +10,41 @@ import java.util.*;
 
 public class JsonParser {
 
-    private String filename;
+    private final String filename;
 
     public JsonParser(String filename) {
         this.filename = filename;
     }
 
-    public void parse(List<Action> actions) {
+    public void parse(List<Action> actions, List<String> triggersArray) {
 
         JSONParser parser = new JSONParser();
 
         JSONObject jObj = null;
         try {
             jObj = (JSONObject) parser.parse(new FileReader(filename));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
 
         // Create an array of actions
-        JSONArray array = (JSONArray) jObj.get("actions");
+        JSONArray array;
+        if (jObj != null) {
+            array = (JSONArray) jObj.get("actions");
+        }
+        else {
+            throw new NullPointerException();
+        }
 
         // Loop through the actions and create separate Action classes
-        for (int i = 0; i < array.size(); i++) {
+        for (Object value : array) {
             Action action = new Action();
-            JSONObject obj2=(JSONObject)array.get(i);
+            JSONObject obj2 = (JSONObject) value;
             JSONArray triggers = (JSONArray) obj2.get("triggers");
             for (Object trigger : triggers) {
                 action.addTrigger((String) trigger);
+                // Add to a separate list for easy lookup
+                triggersArray.add((String) trigger);
             }
             JSONArray subjects = (JSONArray) obj2.get("subjects");
             for (Object subject : subjects) {

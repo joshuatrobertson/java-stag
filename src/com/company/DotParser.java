@@ -10,8 +10,9 @@ import java.util.HashMap;
 
 public class DotParser {
 
-    private String filename;
-    private static boolean firstLocation = true;
+    private final String filename;
+    private static boolean firstLocationBool = true;
+    private Location firstLocation;
 
     public DotParser(String filename) {
         this.filename = filename;
@@ -33,10 +34,11 @@ public class DotParser {
                         Location location = new Location(nLoc.getId().getId());
                         location.setDescription(nLoc.getAttribute("description"));
                         // If it is the first location encountered set it as the starting location
-                        if (firstLocation) {
-                            location.setStartingLocation();
+                        if (firstLocationBool) {
+                            location.setStartingLocation(true);
+                            firstLocation = location;
                         }
-                        firstLocation = false;
+                        firstLocationBool = false;
                         ArrayList<Graph> subGraphs2 = g1.getSubgraphs();
                         for (Graph g2 : subGraphs2) {
                             // Loop through to find which entity type it is and place in the correct array
@@ -69,16 +71,21 @@ public class DotParser {
                         }
                         locations.put(location.getName(), location);
                     }
-
                 ArrayList<Edge> edges = g.getEdges();
-                    // Add the possible paths from each location, by first searching for the initial value
+                // Add the possible paths from each location, by first searching for the initial value
                 // in the hashmap, before setting the next path
                 for (Edge e : edges) {
-                    locations.get(e.getSource().getNode().getId().getId()).addNextLocation(e.getTarget().getNode().getId().getId());
+                    String firstLocation = e.getSource().getNode().getId().getId();
+                    String secondLocation = e.getTarget().getNode().getId().getId();
+                    locations.get(firstLocation).addNextLocation(secondLocation);
                 }
             }
         } catch (FileNotFoundException | ParseException e) {
             System.out.println(e);
         }
+    }
+
+    public Location getFirstLocation() {
+        return firstLocation;
     }
 }
