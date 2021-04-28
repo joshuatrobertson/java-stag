@@ -1,4 +1,4 @@
-package com.company;
+package entities;
 
 abstract class EntityMain {
 

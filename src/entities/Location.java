@@ -1,19 +1,30 @@
-package com.company;
+package entities;
 
 import java.util.*;
 
 public class Location extends EntityMain {
 
-    private List<String> nextLocations = new ArrayList<>();
-    private HashMap<String, Character> characters = new HashMap<>();
-    private HashMap<String, Artefact> artefacts = new HashMap<>();
-    private HashMap<String, Furniture> furniture = new HashMap<>();
-    private boolean startingLocation;
+    private final List<String> nextLocations = new ArrayList<>();
+    private final Map<String, Character> characters = new HashMap<>();
+    private final Map<String, Artefact> artefacts = new HashMap<>();
+    private final Map<String, Furniture> furniture = new HashMap<>();
+    private boolean isStartingLocation;
 
     public Location(String locationName) {
         super.setName(locationName);
     }
 
+    public void setStartingLocation() {
+        this.isStartingLocation = true;
+    }
+
+    public void removeArtefact(String artefact) {
+        artefacts.remove(artefact);
+    }
+
+    public boolean isStartingLocation() {
+        return this.isStartingLocation;
+    }
 
     public boolean checkNextLocation(String nextLocation) {
         return nextLocations.contains(nextLocation);
@@ -31,15 +42,11 @@ public class Location extends EntityMain {
         artefacts.put(artefact.getName(), artefact);
     }
 
-    public void removeArtifact(String artefactName) {
-        artefacts.remove(artefactName);
-    }
-
-    public Artefact getArtefactByName(String artefactName) {
+    public Artefact getArtefactName(String artefactName) {
         return artefacts.get(artefactName);
     }
 
-    public boolean checkArtifactExists(String artifactName) {
+    public boolean checkArtefactExists(String artifactName) {
         return artefacts.containsKey(artifactName);
     }
 
@@ -53,20 +60,11 @@ public class Location extends EntityMain {
         else furniture.remove(entityName);
     }
     public boolean checkEntityExists(String entityName) {
-        if (artefacts.containsKey(entityName)) {
+        if (artefacts.containsKey(entityName) || characters.containsKey(entityName)) {
             return true;
         }
-        else if (characters.containsKey(entityName)) {
-            return true;
-        }
-        else if (furniture.containsKey(entityName)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return furniture.containsKey(entityName);
     }
-
 
     public boolean checkFurnitureExists(String furniture) {
         return this.furniture.containsKey(furniture);
@@ -88,31 +86,24 @@ public class Location extends EntityMain {
         this.furniture.put(furniture.getName(), furniture);
     }
 
-    public void setStartingLocation(boolean startingLocation) {
-        startingLocation = startingLocation;
-    }
-
-
     public String getEntitiesToString() {
         StringBuilder str = new StringBuilder();
         for (Map.Entry<String, Artefact> item : artefacts.entrySet()) {
-            str.append(item.getValue().getDescription() + "\n");
+            str.append(item.getValue().getDescription()).append("\n");
         }
         for (Map.Entry<String, Furniture> item : furniture.entrySet()) {
-            str.append(item.getValue().getDescription() + "\n");
+            str.append(item.getValue().getDescription()).append("\n");
         }
         for (Map.Entry<String, Character> item : characters.entrySet()) {
-            str.append(item.getValue().getDescription() + "\n");
+            str.append(item.getValue().getDescription()).append("\n");
         }
         return str.toString();
     }
 
-
-
     public String getNextLocationsToString() {
         StringBuilder str = new StringBuilder();
         for (String location : nextLocations) {
-            str.append(location + "\n");
+            str.append(location).append("\n");
         }
         return str.toString();
     }

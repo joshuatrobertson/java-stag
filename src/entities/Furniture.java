@@ -1,4 +1,4 @@
-package com.company;
+package entities;
 
 public class Furniture extends EntityMain {
 
