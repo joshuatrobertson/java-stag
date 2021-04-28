@@ -1,6 +1,6 @@
 // DO NOT CHANGE CODE HERE!
 
-package com.company;
+package stag;
 
 import java.io.*;
 import java.net.*;
