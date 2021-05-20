@@ -1,7 +1,12 @@
 package stag;
 
-import entities.*;
+import entities.Artefact;
+import entities.Location;
+
 import java.util.Map;
+
+import static entities.EntityType.ALL_ENTITY_TYPES;
+import static entities.EntityType.ARTEFACT;
 
 public class Commands {
     public static final String HEALTH = "health";
@@ -66,15 +71,15 @@ public class Commands {
     // and places it into the users inventory if it exists, before removing it from
     // the location
     private String getCommand() {
-        String artefact = userCommands[2];
+        String entityName = userCommands[2];
         // Check that the art
-        if (!player.getCurrentLocation().checkArtefactExists(artefact)) {
-            return "There is no " + artefact + " available";
+        if (!player.getCurrentLocation().checkEntityExists(entityName, ARTEFACT)) {
+            return "There is no " + entityName + " available";
         }
         else {
-            player.addInventory(player.getCurrentLocation().getArtefactName(artefact));
-            locations.get(player.getCurrentLocation().getName()).removeArtefact(artefact);
-            return "You picked up a " + artefact;
+            player.addInventory((Artefact) player.getCurrentLocation().getEntity(entityName));
+            locations.get(player.getCurrentLocation().getName()).removeEntity(entityName);
+            return "You picked up a " + entityName;
         }
     }
 
@@ -86,26 +91,26 @@ public class Commands {
     // The drop command allows the user to drop a currently held artefact, which is then
     // placed at the current location
     private String dropCommand() {
-        String artefact = userCommands[2];
-        if (!player.checkCarryArtefact(artefact)) {
-            return "You do not currently have a " + artefact;
+        String artefactName = userCommands[2];
+        if (!player.checkCarryArtefact(artefactName)) {
+            return "You do not currently have a " + artefactName;
         }
 
-        var newArtefact = player.getInventory().get(artefact);
-        player.removeInventory(artefact);
-        player.getCurrentLocation().addArtefact(newArtefact);
-        return "You dropped a " + artefact;
+        var newArtefact = player.getInventory().get(artefactName);
+        player.removeInventory(artefactName);
+        player.getCurrentLocation().addEntity(newArtefact);
+        return "You dropped a " + artefactName;
 
     }
 
     // The go to command checks whether the specified location is a possible route
     // and then places the user there
     private String goToCommand() {
-        String location = userCommands[2];
+        String locationName = userCommands[2];
         // Check that the location is part of the next location
-        if (player.getCurrentLocation().checkNextLocation(location)) {
+        if (player.getCurrentLocation().checkNextLocation(locationName)) {
             // If it is move the player to the specified location
-            player.setCurrentLocation(locations.get(location));
+            player.setCurrentLocation(locations.get(locationName));
             // Print the details of the new location to the console
             return lookCommand();
         }
@@ -141,7 +146,7 @@ public class Commands {
     private boolean checkSubjectsExist(Action action) {
         for (String subject : action.getSubjects()) {
             if (!player.checkSubjectExists(subject) &&
-                    !player.getCurrentLocation().checkEntityExists(subject)) {
+                    !player.getCurrentLocation().checkEntityExists(subject, ALL_ENTITY_TYPES)) {
                 return false;
             }
         }
@@ -149,15 +154,15 @@ public class Commands {
     }
 
     private void removeConsumed(Action action) {
-        for (String consumed : action.getConsumed()) {
-            if (consumed.equals(HEALTH)) {
+        for (String consumedItem : action.getConsumed()) {
+            if (consumedItem.equals(HEALTH)) {
                 player.decreaseHealth();
             }
-            if (player.checkCarryArtefact(consumed)) {
-                player.removeInventory(consumed);
+            if (player.checkCarryArtefact(consumedItem)) {
+                player.removeInventory(consumedItem);
             }
-            if (player.getCurrentLocation().checkEntityExists(consumed)) {
-                player.getCurrentLocation().removeEntity(consumed);
+            if (player.getCurrentLocation().checkEntityExists(consumedItem, ALL_ENTITY_TYPES)) {
+                player.getCurrentLocation().removeEntity(consumedItem);
             }
         }
     }
@@ -167,61 +172,30 @@ public class Commands {
     private void produceEntities(Action action) {
         var unplacedItems = locations.get("unplaced");
         // Loop through each produced item and check whether it exists
-        for (String item : action.getProduced()) {
-            checkEachEntityType(unplacedItems, item);
+        for (String producedItem : action.getProduced()) {
+            checkProducedEntityType(unplacedItems, producedItem);
             // Remove the item
-            unplacedItems.removeEntity(item);
+            unplacedItems.removeEntity(producedItem);
         }
-
-
     }
 
-    private void checkEachEntityType(Location unplacedItems, String item) {
+    // See what type the entity produced is and add it to the current location
+    private void checkProducedEntityType(Location unplacedItems, String producedEntity) {
         // Check if it produces health
-        checkHealthProduced(item);
-        // Check if it is a location
-        checkLocationProduced(item);
-        //Check if it is an artefact
-        checkFurnitureProduced(item, unplacedItems);
-        // Check if it is a character
-        checkCharacterProduced(item, unplacedItems);
-        // Check if it is an artefact
-        checkArtefactProduced(item, unplacedItems);
-    }
-
-    private void checkArtefactProduced(String artefact, Location unplacedItems) {
-        if (unplacedItems.checkArtefactExists(artefact)) {
-            // Add the character to the map and remove it from unplaced items
-            player.getCurrentLocation().addArtefact(unplacedItems.getArtefactName(artefact));
-        }
-    }
-
-    private void checkCharacterProduced(String character, Location unplacedItems) {
-        if (unplacedItems.checkCharacterExists(character)) {
-            // Add the character to the map and remove it from unplaced items
-            player.getCurrentLocation().addCharacter(unplacedItems.getCharacterEntity(character));
-        }
-    }
-
-    // Check if the players
-    private void checkHealthProduced(String health) {
-        if (health.equals(HEALTH) && player.getHealth() < 3) {
+        if (producedEntity.equals(HEALTH) && player.getHealth() < 3) {
             player.increaseHealth();
         }
-    }
-
-    private void checkLocationProduced(String location) {
-        if (locations.containsKey(location)) {
+        // Is it a location?
+        else if (locations.containsKey(producedEntity)) {
             var oldLocation = player.getCurrentLocation();
-            player.setCurrentLocation(locations.get(location));
+            // Therefore set the current location to the given new location
+            player.setCurrentLocation(locations.get(producedEntity));
+            // Add the location so it is possible to go back there
             oldLocation.addNextLocation(player.getCurrentLocation().getName());
-        }
-    }
-
-    private void checkFurnitureProduced(String furniture, Location unplacedItems) {
-        if (unplacedItems.checkFurnitureExists(furniture)) {
-            // Add the furniture to the map and remove it from unplaced items
-            player.getCurrentLocation().addFurniture(unplacedItems.getFurnitureEntity(furniture));
+            // Is it an entity?
+        } else {
+            // Add the character to the map and remove it from unplaced items
+            player.getCurrentLocation().addEntity(unplacedItems.getEntity(producedEntity));
         }
     }
 
@@ -232,20 +206,20 @@ public class Commands {
     // to avoid garbage words within the command as a command such as 'cut word another word axe' will
     // parse Ok.
     private boolean parseTriggerCommands() {
-        String trigger = userCommands[1];
+        String triggerCommand = userCommands[1];
         // Take the last item in the array to account for determiners and adjectives
-        String subject = userCommands[userCommands.length - 1];
+        String subjectCommand = userCommands[userCommands.length - 1];
         // Check both the trigger and subject exist for current player/ current location
             // If the trigger does not exist return false
-            if (!player.checkTriggerExists(trigger)) {
+            if (!player.checkTriggerExists(triggerCommand)) {
                return false;
             }
             // Either the player holds the item **
-            if (player.checkSubjectExists(subject)) {
+            if (player.checkSubjectExists(subjectCommand)) {
                 return true;
             }
             // ** Or the map contains the item
-        return player.getCurrentLocation().checkEntityExists(subject);
+        return player.getCurrentLocation().checkEntityExists(subjectCommand, ALL_ENTITY_TYPES);
 
     }
 
@@ -256,7 +230,7 @@ public class Commands {
         Map<String, Artefact> artefacts = player.getInventory();
 
         for (Map.Entry<String, Artefact> a : artefacts.entrySet()) {
-            location.addArtefact(a.getValue());
+            location.addEntity(a.getValue());
             player.removeInventory(a.getValue().getName());
         }
         // Set the current location to the starting location and return the players health

@@ -1,7 +1,6 @@
 package stag;
 
 import entities.Location;
-import entities.Player;
 
 import java.util.*;
 

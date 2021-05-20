@@ -1,0 +1,20 @@
+
+Y
+java:S2095"DUse try-with-resources or close this "Socket" in a "finally" clause.(Öš¼
+=
+java:S2189""Add an end condition to this loop.(Ù³œõÿÿÿÿÿ
+S
+java:S1197
+"8Move the array designator from the variable to the type.(º ìıÿÿÿÿ
+S	java:S106"9Replace this use of System.out or System.err by a logger.(È¡¹Öÿÿÿÿÿ
+E
+java:S6212"/Declare this local variable with "var" instead.(÷´Öú
+S	java:S106"9Replace this use of System.out or System.err by a logger.(Òî“ùúÿÿÿÿ
+D
+java:S6212"/Declare this local variable with "var" instead.(Öš¼
+D
+java:S6212"/Declare this local variable with "var" instead.(¹Ö&
+J
+java:S6212"/Declare this local variable with "var" instead.(ÜÜ³¹ùÿÿÿÿ
+S	java:S106"9Replace this use of System.out or System.err by a logger.(É³ş¾ıÿÿÿÿ
+S	java:S106$"9Replace this use of System.out or System.err by a logger.(„¨÷öıÿÿÿÿ

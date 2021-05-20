@@ -2,24 +2,30 @@ package entities;
 
 import java.util.*;
 
-public class Location extends EntityMain {
+public class Location extends Entity {
 
     private final List<String> nextLocations = new ArrayList<>();
-    private final Map<String, Character> characters = new HashMap<>();
-    private final Map<String, Artefact> artefacts = new HashMap<>();
-    private final Map<String, Furniture> furniture = new HashMap<>();
+    private final Map<String, Entity> entities = new HashMap<>();
     private boolean isStartingLocation;
 
-    public Location(String locationName) {
-        super.setName(locationName);
+    public Location(String name, String description) {
+        super(name, description);
+    }
+
+    String getEntityType() {
+        return "location";
     }
 
     public void setStartingLocation() {
         this.isStartingLocation = true;
     }
 
-    public void removeArtefact(String artefact) {
-        artefacts.remove(artefact);
+    public void removeEntity(String entity) {
+        entities.remove(entity);
+    }
+
+    public void addEntity(Entity entity) {
+        entities.put(entity.getName(), entity);
     }
 
     public boolean isStartingLocation() {
@@ -34,67 +40,32 @@ public class Location extends EntityMain {
         nextLocations.add(locationName);
     }
 
-    public void addCharacter(Character character) {
-        characters.put(character.getName(), character);
+    public String getEntityName(String entity) {
+        return entities.get(entity).getName();
     }
-
-    public void addArtefact(Artefact artefact) {
-        artefacts.put(artefact.getName(), artefact);
-    }
-
-    public Artefact getArtefactName(String artefactName) {
-        return artefacts.get(artefactName);
-    }
-
-    public boolean checkArtefactExists(String artifactName) {
-        return artefacts.containsKey(artifactName);
-    }
-
-    public void removeEntity(String entityName) {
-        if (artefacts.containsKey(entityName)) {
-            artefacts.remove(entityName);
+    
+    // Check whether the entity name exists and matches the given type
+    public boolean checkEntityExists(String name, EntityType entityType) {
+        // Does the entity exist?
+        if (entities.containsKey(name)) {
+            // Is it the specified type?
+            switch(entityType) {
+                case ARTEFACT: return entities.get(name).getEntityType().equals("artefact");
+                case CHARACTER: return entities.get(name).getEntityType().equals("character");
+                case FURNITURE: return entities.get(name).getEntityType().equals("furniture");
+                case ALL_ENTITY_TYPES: return true;
+            }
         }
-        else if (characters.containsKey(entityName)) {
-            characters.remove(entityName);
-        }
-        else furniture.remove(entityName);
-    }
-    public boolean checkEntityExists(String entityName) {
-        if (artefacts.containsKey(entityName) || characters.containsKey(entityName)) {
-            return true;
-        }
-        return furniture.containsKey(entityName);
+        return false;
     }
 
-    public boolean checkFurnitureExists(String furniture) {
-        return this.furniture.containsKey(furniture);
-    }
-
-    public boolean checkCharacterExists(String character) {
-        return this.characters.containsKey(character);
-    }
-
-    public Furniture getFurnitureEntity(String furniture) {
-        return this.furniture.get(furniture);
-    }
-
-    public Character getCharacterEntity(String character) {
-        return this.characters.get(character);
-    }
-
-    public void addFurniture(Furniture furniture) {
-        this.furniture.put(furniture.getName(), furniture);
+    public Entity getEntity(String name) {
+        return entities.get(name);
     }
 
     public String getEntitiesToString() {
         StringBuilder str = new StringBuilder();
-        for (Map.Entry<String, Artefact> item : artefacts.entrySet()) {
-            str.append(item.getValue().getDescription()).append("\n");
-        }
-        for (Map.Entry<String, Furniture> item : furniture.entrySet()) {
-            str.append(item.getValue().getDescription()).append("\n");
-        }
-        for (Map.Entry<String, Character> item : characters.entrySet()) {
+        for (Map.Entry<String, Entity> item : entities.entrySet()) {
             str.append(item.getValue().getDescription()).append("\n");
         }
         return str.toString();

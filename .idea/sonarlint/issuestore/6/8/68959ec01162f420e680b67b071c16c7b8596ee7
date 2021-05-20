@@ -1,0 +1,24 @@
+
+k
+java:S1192$"PDefine a constant instead of duplicating this literal "Josh: fight elf" 3 times.(µÆÈØøÿÿÿÿ
+f
+java:S1192"KDefine a constant instead of duplicating this literal "Josh: look" 3 times.(™…ÎÆúÿÿÿÿ
+g	java:S101"MRename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.(óÎ °ùÿÿÿÿ
+S
+java:S1197"8Move the array designator from the variable to the type.(º ìıÿÿÿÿ
+E
+java:S6212"/Declare this local variable with "var" instead.(ÍÅÿş
+S	java:S106"9Replace this use of System.out or System.err by a logger.(™…ÎÆúÿÿÿÿ
+Q	java:S125"<This block of commented-out lines of code should be removed.(ïÑù…
+N	java:S106"9Replace this use of System.out or System.err by a logger.(ïÑù…
+M	java:S106"9Replace this use of System.out or System.err by a logger.(µ‚Å
+S	java:S106"9Replace this use of System.out or System.err by a logger.(¯Ñ–¡ıÿÿÿÿ
+N	java:S106 "9Replace this use of System.out or System.err by a logger.(‹‘¡ö
+N	java:S106!"9Replace this use of System.out or System.err by a logger.(º„À
+N	java:S106""9Replace this use of System.out or System.err by a logger.(Ö´Š
+S	java:S106#"9Replace this use of System.out or System.err by a logger.(™…ÎÆúÿÿÿÿ
+S	java:S106$"9Replace this use of System.out or System.err by a logger.(µÆÈØøÿÿÿÿ
+S	java:S106%"9Replace this use of System.out or System.err by a logger.(µÆÈØøÿÿÿÿ
+S	java:S106&"9Replace this use of System.out or System.err by a logger.(µÆÈØøÿÿÿÿ
+S	java:S106'"9Replace this use of System.out or System.err by a logger.(™…ÎÆúÿÿÿÿ
+N	java:S106*"9Replace this use of System.out or System.err by a logger.(ÕşÈè

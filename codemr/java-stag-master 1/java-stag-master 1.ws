@@ -1,0 +1,1 @@
+{"java-stag-master":{"name":"java-stag-master","packages":{"com.company":{"packageName":"com.company","isAll":false,"classes":["Lcom.company.Command"]}}}}

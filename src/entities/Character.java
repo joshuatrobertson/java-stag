@@ -1,9 +1,12 @@
 package entities;
 
-public class Character extends EntityMain {
+public class Character extends Entity {
 
-    public Character(String characterName) {
-        super.setName(characterName);
+    public Character(String name, String description) {
+        super(name, description);
     }
 
+    String getEntityType() {
+        return "character";
+    }
 }

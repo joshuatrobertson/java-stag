@@ -1,11 +1,9 @@
 package stag;
 
-import entities.Artefact;
-import entities.Character;
-import entities.Furniture;
-import entities.Location;
+import entities.*;
 import com.alexmerz.graphviz.*;
 import com.alexmerz.graphviz.objects.*;
+import entities.Character;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,23 +13,17 @@ import java.util.logging.*;
 public class DotParser {
 
     private static final Logger logger = Logger.getLogger(DotParser.class.getName());
-    private final String filename;
     private boolean firstLocationBool = true;
-    private Location firstLocation;
-    private Parser parser;
-    private FileReader reader;
-    private List<Graph> graphs;
     private List<Graph> subGraphs;
     private static final String DESCRIPTION = "description";
 
     // Set up the parser using the given filename
     public DotParser(String filename) {
-        this.filename = filename;
         try {
-            parser = new Parser();
-            reader = new FileReader(filename);
+            Parser parser = new Parser();
+            FileReader reader = new FileReader(filename);
             parser.parse(reader);
-            graphs = parser.getGraphs();
+            List<Graph> graphs = parser.getGraphs();
             subGraphs = graphs.get(0).getSubgraphs();
         } catch (FileNotFoundException | ParseException e) {
             logger.log(Level.SEVERE, e.toString(), e);
@@ -39,7 +31,7 @@ public class DotParser {
     }
 
     // Parse the file by traversing the graph and subgraphs
-    public void parseDot(HashMap<String, Location> locations) {
+    public void parseDot(Map<String, Location> locations) {
             for (Graph g : subGraphs) {
                     List<Graph> subGraphs1 = g.getSubgraphs();
                     // Loop through the subgraphs and create a Location object for each
@@ -50,7 +42,7 @@ public class DotParser {
                         addItemsToLocation(graph, location);
                         locations.put(location.getName(), location);
                     }
-                getGraphEdges(locations, g);
+                getGraphEdges((HashMap<String, Location>) locations, g);
             }
         }
 
@@ -59,8 +51,7 @@ public class DotParser {
         List<Node> nodesLoc = graph.getNodes(false);
         var node = nodesLoc.get(0);
         // Create a new location and set the name
-        var location = new Location(node.getId().getId());
-        location.setDescription(node.getAttribute(DESCRIPTION));
+        var location = new Location(node.getId().getId(), node.getAttribute(DESCRIPTION));
         // If it is the first location encountered set it as the starting location
         if (firstLocationBool) {
             location.setStartingLocation();
@@ -76,24 +67,22 @@ public class DotParser {
             // Loop through to find which entity type it is and place in the correct array
             String entityType = graph2.getId().getId();
             List<Node> nodesEnt = graph2.getNodes(false);
+            Entity entity;
             for (Node node : nodesEnt) {
                 switch (entityType) {
                     case "artefacts":
-                        var artefact = new Artefact(node.getId().getId());
-                        artefact.setDescription(node.getAttribute(DESCRIPTION));
-                        location.addArtefact(artefact);
+                        entity = new Artefact(node.getId().getId(), node.getAttribute(DESCRIPTION));
                         break;
                     case "furniture":
-                        var furniture = new Furniture(node.getId().getId());
-                        furniture.setDescription(node.getAttribute(DESCRIPTION));
-                        location.addFurniture(furniture);
+                        entity = new Furniture(node.getId().getId(), node.getAttribute(DESCRIPTION));
                         break;
                     case "characters":
-                        var character = new Character(node.getId().getId());
-                        character.setDescription(node.getAttribute(DESCRIPTION));
-                        location.addCharacter(character);
+                        entity = new Character(node.getId().getId(), node.getAttribute(DESCRIPTION));
                         break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + entityType);
                 }
+                location.addEntity(entity);
             }
         }
     }
@@ -103,9 +92,12 @@ public class DotParser {
         // Add the possible paths from each location, by first searching for the initial value
         // in the hashmap, before setting the next path
         for (Edge e : edges) {
-            String firstLoc = e.getSource().getNode().getId().getId();
-            String secondLoc = e.getTarget().getNode().getId().getId();
-            locations.get(firstLoc).addNextLocation(secondLoc);
+            // Fetch the source
+            String source = e.getSource().getNode().getId().getId();
+            // Fetch the target
+            String target = e.getTarget().getNode().getId().getId();
+            // Add them to locations
+            locations.get(source).addNextLocation(target);
         }
     }
 }
